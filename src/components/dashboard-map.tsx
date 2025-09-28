@@ -10,6 +10,7 @@ interface MapEntity {
 }
 
 export function DashboardMap() {
+  const [selectedEntity, setSelectedEntity] = useState<string | null>(null);
   const [entities, setEntities] = useState<MapEntity[]>([
     { id: "d1", type: "drone", x: 20, y: 30, status: "active" },
     { id: "d2", type: "drone", x: 80, y: 60, status: "active" },
@@ -72,19 +73,30 @@ export function DashboardMap() {
       {/* Entities */}
       {entities.map((entity) => {
         const Icon = getEntityIcon(entity.type);
+        const isSelected = selectedEntity === entity.id;
         return (
           <div
             key={entity.id}
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-2000 ease-in-out"
+            className={`absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-2000 ease-in-out cursor-pointer ${
+              isSelected ? 'scale-150 z-10' : 'hover:scale-125'
+            }`}
             style={{ left: `${entity.x}%`, top: `${entity.y}%` }}
+            onClick={() => setSelectedEntity(selectedEntity === entity.id ? null : entity.id)}
           >
             <Icon 
               className={`w-4 h-4 ${getEntityColor(entity.type, entity.status)} ${
                 entity.status === "threat" ? "animate-pulse" : ""
-              }`} 
+              } ${isSelected ? "shadow-glow-primary" : ""}`} 
             />
             {entity.status === "active" && entity.type === "drone" && (
               <div className="absolute inset-0 w-8 h-8 border border-secondary/50 rounded-full animate-ping" />
+            )}
+            {isSelected && (
+              <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-card/90 backdrop-blur-sm rounded-lg p-2 border border-border whitespace-nowrap text-xs">
+                {entity.type.charAt(0).toUpperCase() + entity.type.slice(1)} {entity.id.toUpperCase()}
+                <br />
+                Status: {entity.status}
+              </div>
             )}
           </div>
         );

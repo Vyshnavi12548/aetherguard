@@ -50,10 +50,19 @@ export function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-gradient-primary hover:shadow-glow-primary transition-all duration-300">
+            <Button 
+              size="lg" 
+              className="bg-gradient-primary hover:shadow-glow-primary transition-all duration-300"
+              onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
+            >
               View Live Dashboard
             </Button>
-            <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/10">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-primary text-primary hover:bg-primary/10"
+              onClick={() => document.getElementById('technical')?.scrollIntoView({ behavior: 'smooth' })}
+            >
               Technical Overview
             </Button>
           </div>

@@ -1,6 +1,7 @@
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import { ThreatAlert } from "@/components/ui/threat-alert";
 import { DashboardMap } from "@/components/dashboard-map";
+import { SimulationControls } from "@/components/simulation-controls";
 import { useState, useEffect } from "react";
 
 export function DashboardSection() {
@@ -11,7 +12,7 @@ export function DashboardSection() {
     threatCount: 2
   });
 
-  const [alerts] = useState([
+  const [alerts, setAlerts] = useState([
     {
       id: "1",
       type: "bird" as const,
@@ -35,6 +36,33 @@ export function DashboardSection() {
     }
   ]);
 
+  const simulateAlert = () => {
+    const newAlert = {
+      id: Date.now().toString(),
+      type: "bird" as const,
+      severity: "high" as const,
+      message: "SIMULATION: Emergency bird strike threat detected!",
+      timestamp: new Date().toLocaleTimeString()
+    };
+    setAlerts(prev => [newAlert, ...prev.slice(0, 4)]);
+    
+    // Update stats for simulation
+    setStats(prev => ({
+      ...prev,
+      threatCount: prev.threatCount + 1,
+      riskLevel: "HIGH"
+    }));
+    
+    // Reset after 5 seconds
+    setTimeout(() => {
+      setStats(prev => ({
+        ...prev,
+        threatCount: Math.max(0, prev.threatCount - 1),
+        riskLevel: prev.threatCount <= 1 ? "LOW" : "MEDIUM"
+      }));
+    }, 5000);
+  };
+
   useEffect(() => {
     const interval = setInterval(() => {
       setStats(prev => ({
@@ -48,7 +76,7 @@ export function DashboardSection() {
   }, []);
 
   return (
-    <section className="py-20 bg-gradient-cyber">
+    <section id="dashboard" className="py-20 bg-gradient-cyber">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">Live Control Dashboard</h2>
@@ -87,10 +115,13 @@ export function DashboardSection() {
 
           {/* Map View */}
           <div className="lg:col-span-2">
-            <h3 className="text-lg font-semibold mb-4">Airspace Overview</h3>
-            <div className="h-96">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Airspace Overview</h3>
+            </div>
+            <div className="h-96 mb-4">
               <DashboardMap />
             </div>
+            <SimulationControls onSimulateAlert={simulateAlert} />
           </div>
 
           {/* Threat Alerts */}
